@@ -1,0 +1,15 @@
+<h2 class ="myh2yr"><%= @category_name  + " Costs for " + @election_year[:year].to_s %>
+&rarr;  Step <%= @postage.current_step + 1 %> of <%= @postage.total_steps %></h2>
+
+
+
+<%= render 'form' %>
+<%= render 'modal_info' %>
+
+
+
+
+<div class="end_link">
+<%= eval(  @categories_path) %> |
+<%= link_to "Cost Category Home", home_path  %>
+</div>

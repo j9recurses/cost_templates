@@ -1,0 +1,46 @@
+<h2 class ="myh2show"><%= @category_name  + " Costs Summary for " + @election_year[:year].to_s %></h2>
+
+<% total = 0 %>
+<% @category_description.each do |pd| %>
+
+<div class="show_item_title">
+  <%= pd[:label ].to_s.upcase %>
+</div>
+ <% @itemamt = 0 %>
+
+<div class="show_item">
+<% if  pd[:field].nil? %>
+<%  @itemamt = "0" %>
+  <%="$" + @itemamt %>
+  <% total = total +@itemamt.to_i %>
+<% else %>
+<%  @itemamt =  eval("@postage[:" + pd[:field]+"]" )  %>
+<% if @filtercomments.include?  pd[:field] %>
+    <%=@itemamt.to_s %>
+<% elsif @filterpercents.include? pd[:field] %>
+     <%= @itemamt.to_s + "%" %>
+    <% elsif @filterhours.include? pd[:field] %>
+     <%= @itemamt.to_s + " hrs" %>
+  <%else %>
+  <% total = total + @itemamt.to_i %>
+  <%="$" + @itemamt.to_s %>
+   <%end %>
+<%end %>
+</div>
+
+<%end %>
+<div class="show_item_title_total">
+  TOTAL
+</div>
+
+<div class="show_item_total">
+<%="$" + total.to_s %>
+<% Postage.category_total(@category_id, total) %>
+</div>
+
+<div class="end_link">
+<%= link_to 'Edit',  edit_postage_path(@postage[:id]) %> |
+<%= link_to 'Delete This Page', postage_path, method: :delete, data: { confirm: 'Are you sure?' } %> |
+<%= eval(  @categories_path) %> |
+<%= link_to "Cost Category Home", home_path  %>
+</div>
