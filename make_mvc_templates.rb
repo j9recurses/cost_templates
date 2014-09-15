@@ -64,12 +64,12 @@ def gen_controller(model, flist , cntrl_fname, model_fname, wizard_fname)
 end
 
 def gen_model (model, flist , cntrl_fname, model_fname, wizard_fname)
-  qrypers = "select fieldlist from filter_costs where filtertype = 'percent';"
-  fresultpers =  @client.query(qrypers)
+  #qrypers = "select fieldlist from filter_costs where filtertype = 'percent';"
+  #fresultpers =  @client.query(qrypers)
   fpercentfilter = ''
-   fresultpers.each(:as => :array) do |row|
-      fpercentfilter = row[0]
-  end
+  # fresultpers.each(:as => :array) do |row|
+     # fpercentfilter = row[0]
+#  end
   qrycom = "select fieldlist from filter_costs where filtertype = 'comment';"
   fresultcom =  @client.query(qrycom)
   fcomfilter = ''
@@ -144,7 +144,7 @@ def make_view_steps(model, viewsteps_fname, flist, viewdir)
     stepsdir = viewdir + "/" + "steps"
     FileUtils::mkdir_p stepsdir
     #make the chunks for the _steps files
-    chunks = flist.length.divmod(3)
+    chunks = flist.length.divmod(6)
     numb_of_chunks = chunks[0] + chunks[1]
     chunk_range = (1..numb_of_chunks).to_a
     chunk_range.each do | chunk|
@@ -164,7 +164,7 @@ def make_view_steps(model, viewsteps_fname, flist, viewdir)
 
 
 #get the model names
-templatedir = '/home/j9/Desktop/cost_categories_generator/templates/'
+templatedir = '/home/j9/Desktop/caceo_templates/cost_templates/templates/'
 cntrl_fname = templatedir + 'controller_template'
 model_fname =templatedir + 'model_template'
 wizard_fname = templatedir + 'wizard_template'

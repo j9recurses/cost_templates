@@ -30,7 +30,7 @@
 
 <%end %>
 <div class="show_item_title_total">
-  TOTAL
+  TOTAL INCLUDING BENEFITS
 </div>
 
 <div class="show_item_total">
