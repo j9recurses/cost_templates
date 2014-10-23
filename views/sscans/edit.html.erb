@@ -1,0 +1,26 @@
+     
+<% c = CategoryDescription.where(model_name: "sscans").pluck(:cost_type).uniq %>
+<%  if c[0] == 'salaries' %>
+<%header_item = " for the "  %>
+<%else%>
+<%header_item = " Costs for the "  %>
+<%end%>
+
+
+<h2 class ="myh2yr"><%= "Edit " + @category_name  + header_item  + @election_year[:year].to_s %>
+&rarr;  Step <%= @sscan.current_step + 1 %> of <%= @sscan.total_steps %></h2>
+
+
+
+
+<%= render 'form' %>
+<%= render 'modal_info' %>
+
+
+
+<div class="end_link">
+<%= link_to "Back ", sscan_path(@sscan[:id]) %>|
+<%= eval(  @categories_path) %> |
+<%= link_to "Cost Category Home", home_path  %>
+</div>
+.

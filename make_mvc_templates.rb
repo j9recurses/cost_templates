@@ -124,13 +124,15 @@ def gen_views(model,  flist,  view_file_dict, templatedir, viewsteps_fname )
     vf = templatedir + vf
     viewitem = IO.read(vf)
     formstuff = <<-EOT
-     #{viewitem}
+     #{viewitem}.
     EOT
     #replace postage and postages
     newform =  formstuff.gsub(/postages/, model)   #model_down_pl
-    newform  =  newform.gsub(/Postages/, model.capitalize)  #model_up_pl
+      newform  =  newform.gsub(/Postages/, model.capitalize)
     newform  =  newform.gsub(/postage/, model.chomp('s') )  #model_up_sing
-    newform  =  newform.gsub(/Postages/, model.capitalize)  #model_up_pl
+    newform  =  newform.gsub(/Postage/,  model.capitalize)  #model_up_pl
+    tosub  = model.capitalize + "s.category"
+    newform  =  newform.gsub(tosub, model.capitalize + ".category")  #model_up_pl
     #make the view dir and write the files
     FileUtils::mkdir_p viewdir
     fname = viewdir + "/" + fn
@@ -144,7 +146,7 @@ def make_view_steps(model, viewsteps_fname, flist, viewdir)
     stepsdir = viewdir + "/" + "steps"
     FileUtils::mkdir_p stepsdir
     #make the chunks for the _steps files
-    chunks = flist.length.divmod(6)
+    chunks = flist.length.divmod(12)
     numb_of_chunks = chunks[0] + chunks[1]
     chunk_range = (1..numb_of_chunks).to_a
     chunk_range.each do | chunk|
@@ -164,7 +166,7 @@ def make_view_steps(model, viewsteps_fname, flist, viewdir)
 
 
 #get the model names
-templatedir = '/home/j9/Desktop/caceo_templates/cost_templates/templates/'
+templatedir = '/home/j9/Desktop/work_stuff/caceo_costs_new/cost_templates/templates/'
 cntrl_fname = templatedir + 'controller_template'
 model_fname =templatedir + 'model_template'
 wizard_fname = templatedir + 'wizard_template'

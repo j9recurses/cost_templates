@@ -1,4 +1,13 @@
-<h2 class ="myh2yr"><%= "Edit " + @category_name  + " Costs for " + @election_year[:year].to_s %>
+
+<% c = CategoryDescription.where(model_name: "postages").pluck(:cost_type).uniq %>
+<%  if c[0] == 'salaries' %>
+<%header_item = " for the "  %>
+<%else%>
+<%header_item = " Costs for the "  %>
+<%end%>
+
+
+<h2 class ="myh2yr"><%= "Edit " + @category_name  + header_item  + @election_year[:year].to_s %>
 &rarr;  Step <%= @postage.current_step + 1 %> of <%= @postage.total_steps %></h2>
 
 

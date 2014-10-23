@@ -1,0 +1,44 @@
+     <% if @postage.errors.any? %>
+    <div id="error_explanation">
+      <ul>
+      <% @postage.errors.each do |field, msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<%= simple_form_for @postage do |f| %>
+  <% unless params[:all] %>
+
+    <%= f.hidden_field :current_step, value: @postage.current_step %>
+    <%=f.input :election_year_id ,  as: :hidden, :input_html => { :value => session[:election_year]} %>
+    <%=f.input :county ,  as: :hidden, :input_html => { :value => session[:county]} %>
+
+    <%= render "postages/steps/page#{@postage.current_step + 1}", f: f %>
+
+
+  <div class="form-actions">
+      <%= f.submit "Back", name: "back_button" unless @postage.first_step? %>
+      <%= f.submit  "Save and Exit", name: "save_and_exit" unless @postage.last_step? %>
+      <% @last = "Submit " +    @category_name + " Costs for " + @election_year[:year].to_s %>
+      <% if @postage.last_step? %>
+      <%=  f.submit @last %>
+      <% else %>
+      <%= f.submit "Next" %>
+      <%end %>
+    </div>
+
+  <% else %>
+
+    <%# all the fields on one page... %>
+    <%= hidden_field_tag :all, 1 %>
+    <% Postages.total_steps.times do |step| %>
+      <%= render "postages/steps/page#{step + 1}", f: f %>
+    <% end %>
+    <%= f.submit %>
+
+  <% end %>
+
+<% end %>
+.

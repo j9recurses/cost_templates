@@ -1,0 +1,171 @@
+     <h2 class ="myh2show"><%= @category_name  + " Summary for the " + @election_year[:year].to_s %></h2>
+
+<% total = 0 %>
+<% salaries_dict = Hash.new() %>
+<% benefits_dollars_dict = Hash.new() %>
+<% benefits_percent_dict = Hash.new() %>
+<% hours_worked_dict = Hash.new()  %>
+<% comment_dict = Hash.new()  %>
+<% other_dict = Hash.new()  %>
+<% salaries_or_other = '' %>
+
+<% @category_description.each do |pd| %>
+  <% if pd[:cost_type] == 'salaries' %>
+    <%  salaries_or_other  = 'salaries' %>
+    <%valpd = eval("@sspw[:" + pd[:field]+"]" ) %>
+
+     <% if pd[:label]  =~ /Salaries/ %>
+         <% if valpd.nil? %>
+       <%salaries_dict[pd[:label].to_s.upcase ] = 0 %>
+        <% else %>
+        <%salaries_dict[pd[:label].to_s.upcase ] = eval("@sspw[:" + pd[:field]+"]" ) %>
+         <% end %>
+     <% elsif pd[:label]  =~ /Benefits.*dollars/ %>
+         <% if  valpd.nil? %>
+       <%benefits_dollars_dict[pd[:label].to_s.upcase ] = 0 %>
+        <% else %>
+        <%benefits_dollars_dict[pd[:label].to_s.upcase ] = eval("@sspw[:" + pd[:field]+"]" ) %>
+         <% end %>
+      <% elsif pd[:label]  =~ /Benefits.*percent/ %>
+         <% if  valpd.nil? %>
+       <% benefits_percent_dict[pd[:label].to_s.upcase ] = 0 %>
+        <% else %>
+        <% benefits_percent_dict[pd[:label].to_s.upcase ] = eval("@sspw[:" + pd[:field]+"]" ) %>
+         <% end %>
+      <% elsif pd[:label]  =~ /Hours/ %>
+         <% if valpd.nil? %>
+       <% hours_worked_dict[pd[:label].to_s.upcase ] = 0 %>
+        <% else %>
+        <% hours_worked_dict[pd[:label].to_s.upcase ] = eval("@sspw[:" + pd[:field]+"]" )%>
+         <% end %>
+      <% elsif pd[:label]  =~  /General/  %>
+        <% comment_dict[pd[:label].to_s.upcase ] = eval("@sspw[:" + pd[:field]+"]" )%>
+      <%else%>
+         <% if  valpd.nil? %>
+       <% other_dict[pd[:label].to_s.upcase ] = 0 %>
+        <% else %>
+        <% other_dict[pd[:label].to_s.upcase ] = eval("@sspw[:" + pd[:field]+"]" ) %>
+         <% end %>
+      <% end %>
+  <% end %>
+  <% end %>
+
+   <%if  salaries_or_other == 'salaries'  %>
+      <div class="show_item_title_main">
+      <% saltot = 0 %>
+      <% salaryvals =  salaries_dict.values() %>
+       <% saltot = salaryvals.inject{|sum,x| sum + x } %>
+        <%= 'Total Salaries: '  + "$" + saltot.to_s  %>
+       </div>
+
+        <%other_dict.each do |k, v| %>
+         <div class="show_item_title_sub">
+         <%=  k.titleize + ": $" + v.to_s %>
+         </div>
+        <% end %>
+
+       <% salaries_dict.each do |k, v| %>
+       <div class="show_item_title_sub">
+       <%= k.titleize + ": $"+v.to_s  %>
+       </div>
+       <% end %>
+
+      <div class="show_item_title_main">
+      <% bendoltot = 0 %>
+      <% bendolvals =  benefits_dollars_dict.values() %>
+       <% bendoltot = bendolvals.inject{|sum,x| sum + x } %>
+        <%= 'Total Benefits - in Dollars: '  + "$" + bendoltot.to_s  %>
+       </div>
+
+       <% benefits_dollars_dict.each do |k, v| %>
+       <div class="show_item_title_sub">
+       <%= k.titleize + ": $"+v.to_s  %>
+      </div>
+       <% end %>
+
+      <div class="show_item_title_main">
+        <% benpertot = 0 %>
+      <% benpervals =  benefits_percent_dict.values() %>
+       <% benpertot = benpervals.inject{|sum,x| sum + x } %>
+        <%= 'Total Benefits - in Percent: '  + benpertot.to_s + "%"  %>
+       </div>
+       <% benefits_percent_dict.each do |k, v| %>
+       <div class="show_item_title_sub">
+       <%= k.titleize + ": " +  v.to_s + "%" %>
+       </div>
+       <% end %>
+
+
+      <div class="show_item_title_main">
+      <% hrswkedtot = 0 %>
+      <% hrsvals = hours_worked_dict.values() %>
+       <% hrswkedtot = hrsvals.inject{|sum,x| sum + x } %>
+        <%= 'Total Hours Worked: '  +  hrswkedtot.to_s + "hrs" %>
+       </div>
+       <% hours_worked_dict.each do |k, v| %>
+       <div class="show_item_title_sub">
+       <%= k.titleize + ": "  + v.to_s + "hrs" %>
+       </div>
+       <% end %>
+
+  <% total =  bendoltot + saltot %>
+  </div>
+  <%else%>
+
+<% @category_description.each do |pd| %>
+<div class="show_item_title">
+  <%= pd[:label ].to_s.upcase %>
+</div>
+ <% @itemamt = 0 %>
+
+<div class="show_item">
+<% if  pd[:field].nil? %>
+<%  @itemamt = "0" %>
+  <%="$" + @itemamt %>
+  <% total = total +@itemamt.to_i %>
+<% else %>
+<%  @itemamt =  eval("@sspw[:" + pd[:field]+"]" )  %>
+<% if @filtercomments.include?  pd[:field] %>
+    <%=@itemamt.to_s %>
+  <%else %>
+  <% total = total + @itemamt.to_i %>
+  <%="$" + @itemamt.to_s %>
+   <%end %>
+<%end %>
+<%end%>
+<%end%>
+</div>
+
+
+
+<div class="show_item_title_total">
+<% c = CategoryDescription.where(model_name: "sspws").pluck(:cost_type).uniq %>
+<%  if c[0] == 'salaries' %>
+    <%="TOTAL INCLUDING BENEFITS" %>
+  <% else %>
+   <%="TOTAL" %>
+    <%end%>
+   </div>
+
+<div class="show_item_total">
+<%="$" + total.to_s %>
+<% Sspws.category_total(@category_id, total) %>
+</div>
+
+<%comment_dict.each do |k, v| %>
+<div class="show_item_title">
+<%= k.titleize %>
+  </div>
+  <div class="show_item">
+ <%= v.to_s %>
+  </div>
+<% end %>
+
+<div class="end_link">
+<%= link_to 'Edit',  edit_sspw_path(@sspw[:id]) %> |
+<%= link_to 'Delete This Page', sspw_path, method: :delete, data: { confirm: 'Are you sure?' } %> |
+<%= eval(  @categories_path) %> |
+<%= link_to "Cost Category Home", home_path  %>
+</div>
+
+.
